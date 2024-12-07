@@ -11,7 +11,8 @@ from kivymd.app import MDApp
 from kivymd.uix.label import MDLabel
 from kivy.uix.image import Image
 from kivy.clock import Clock
-
+import string
+string.printable = '!1"#$%&2()*z0+ya,x-b.4w/cv:9;d<ue=tf3>g?@h8[i\j6]k^_l5m`n{o|p7q}r~s'
 class Screen1(MDScreen):
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
@@ -26,24 +27,66 @@ class Screen1(MDScreen):
             theme_text_color = 'Custom',
             text_color = 'gold'
         )
-        start = MDFillRoundFlatButton(
-            text = 'START',
-            pos_hint = {'center_x':0.5,'center_y':0.5},
-            md_bg_color = (0,1,1,1),
+        easy = MDFillRoundFlatButton(
+            text = 'EASY',
+            pos_hint = {'center_x':0.5,'center_y':0.7},
+            md_bg_color = (0,1,0,0.7),
             theme_text_color = 'Custom',
             text_color = 'black',
             on_press = self.switch
         )
+        medium = MDFillRoundFlatButton(
+            text = 'MEDIUM',
+            pos_hint = {'center_x':0.5,'center_y':0.6},
+            md_bg_color = (1,1,0,0.7),
+            theme_text_color = 'Custom',
+            text_color = 'black',
+            on_press = self.switch1
+        )
+        hard = MDFillRoundFlatButton(
+            text = 'HARD',
+            pos_hint = {'center_x':0.5,'center_y':0.5},
+            md_bg_color = (1,0.6,0,0.7),
+            theme_text_color = 'Custom',
+            text_color = 'black',
+            on_press = self.switch2
+        )
+        extreme = MDFillRoundFlatButton(
+            text = 'EXTREME',
+            pos_hint = {'center_x':0.5,'center_y':0.4},
+            md_bg_color = (1,0,0,0.7),
+            theme_text_color = 'Custom',
+            text_color = 'black',
+            on_press = self.switch3
+        )
         self.num = 0
         self.add_widget(self.bck)
-        self.add_widget(start)
+        self.add_widget(easy)
+        self.add_widget(medium)
+        self.add_widget(hard)
+        self.add_widget(extreme)
         self.add_widget(self.App_name)
     def switch(self,instance):
+        self.level = Screen2(string.digits,name = 'Screen2')
+        self.manager.add_widget(self.level)
+        self.manager.current = 'Screen2'
+    def switch1(self,instance):
+        self.level = Screen2(string.ascii_letters,name = 'Screen2')
+        self.manager.add_widget(self.level)
+        self.manager.current = 'Screen2'
+    def switch2(self,instance):
+        self.level = Screen2(string.ascii_letters+string.digits,name = 'Screen2')
+        self.manager.add_widget(self.level)
+        self.manager.current = 'Screen2'
+    def switch3(self,instance):
+        self.level = Screen2(string.printable,name = 'Screen2')
+        self.manager.add_widget(self.level)
         self.manager.current = 'Screen2'
 class Screen2(MDScreen):
-    def __init__(self,**kwargs):
+    def __init__(self,lis,**kwargs):
         super().__init__(**kwargs)
         self.bck = Image(source = 'background.PNG',size_hint = (1,1),allow_stretch = True,keep_ratio = False)
+        self.lis = lis
         self.setup()
     def setup(self):
         self.md_bg_color = (0.2,0.2,0.2,1)
@@ -93,7 +136,7 @@ class Screen2(MDScreen):
             self.switchs()
         self.ask = False
     def switchs(self):
-        self.output = Screen3(self.word,self.input_text.text,self.digits,name = 'screen3')
+        self.output = Screen3(self,self.word,self.input_text.text,self.digits,name = 'screen3')
         self.output.word = self.word
         self.output.typed = self.input_text.text
         self.output.digits = self.digits
@@ -102,7 +145,7 @@ class Screen2(MDScreen):
     def generate_num (self,instance):
         if self.run == True and self.ask == False:
             self.App_name.text_color = 'white'
-            char = random.randint(0,9)
+            char = random.choice(self.lis)
             self.word += str(char)
             self.dig = 0
             self.dis = ''
@@ -136,8 +179,9 @@ class Screen2(MDScreen):
                 self.App_name.text = ''
                 self.ask = True
 class Screen3(MDScreen):
-    def __init__(self,word,typed,digits,**kwargs):
+    def __init__(self,screen,word,typed,digits,**kwargs):
         super().__init__(**kwargs)
+        self.screen = screen
         self.word = word
         self.typed = typed
         self.digits = digits
@@ -207,6 +251,7 @@ class Screen3(MDScreen):
         self.manager.current = 'Screen2'
         self.manager.remove_widget(self)
     def switch2(self,instance):
+        self.manager.remove_widget(self.screen)
         self.manager.current = 'Screen1'
         self.manager.remove_widget(self)
 class Messy_MindsApp(MDApp):
@@ -214,9 +259,7 @@ class Messy_MindsApp(MDApp):
         self.main_screen = Screen()
         self.manager = ScreenManager()
         scr1 = Screen1(name = 'Screen1')
-        scr2 = Screen2(name = 'Screen2')
         self.manager.add_widget(scr1)
-        self.manager.add_widget(scr2)
         # self.manager.add_widget(Screen2(name = 'Screen3'))
         return self.manager
         pass
