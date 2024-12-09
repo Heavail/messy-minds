@@ -9,15 +9,21 @@ from kivymd.uix.button import MDFillRoundFlatButton
 from kivymd.uix.toolbar import MDTopAppBar
 from kivymd.app import MDApp
 from kivymd.uix.label import MDLabel
+from kivymd.uix.button import MDRaisedButton
+from kivymd.uix.dialog import MDDialog
 from kivy.uix.image import Image
 from kivy.clock import Clock
 import string
+let = ''
+for i in string.printable:
+    let += i
+print(let)
 string.printable = '!1"#$%&2()*z0+ya,x-b.4w/cv:9;d<ue=tf3>g?@h8[i\j6]k^_l5m`n{o|p7q}r~s'
 class Screen1(MDScreen):
     def __init__(self,**kwargs):
         super().__init__(**kwargs)
         self.md_bg_color = (0.2,0.2,0.2,)
-        self.bck = Image(source = 'background.PNG',size_hint = (1,1),allow_stretch = True,keep_ratio = False)
+        # self.bck = Image(source = 'background.PNG',size_hint = (1,1),allow_stretch = True,keep_ratio = False)
         self.App_name = MDLabel(
             text = 'Messy Minds',
             halign = 'center',
@@ -26,6 +32,13 @@ class Screen1(MDScreen):
             italic = True,
             theme_text_color = 'Custom',
             text_color = 'gold'
+        )
+        self.help = MDRaisedButton(
+            text = 'How to Play ?',
+            pos_hint = {'center_x': 0.9,'center_y': 0.9},
+            md_bg_color = (0,0,0,1),
+            text_color = 'white',
+            on_press = self.help_dialogue
         )
         easy = MDFillRoundFlatButton(
             text = 'EASY',
@@ -60,12 +73,29 @@ class Screen1(MDScreen):
             on_press = self.switch3
         )
         self.num = 0
-        self.add_widget(self.bck)
+        # self.add_widget(self.bck)
+        self.add_widget(self.help)
         self.add_widget(easy)
         self.add_widget(medium)
         self.add_widget(hard)
         self.add_widget(extreme)
         self.add_widget(self.App_name)
+    def help_dialogue(self,instance):
+        self.dialog = MDDialog(
+            title = 'How to Play ?',
+            text = '''This is a memory based game. Once you select the difficulty level you will be shown few texts in white after a timer. You have to remember those texts and write them down in the input box. Correct text will increase your score. So play and increase your memory.
+            
+            Note:- THE GAME IS CASE SENSITIVE SO TREAT CAPITAL AND SMALL LETTERS DIFFERENTLY... ''',
+            pos_hint = {'center_x':0.5,'center_y':0.5},
+            buttons=[
+                MDRaisedButton(
+                    text="CLOSE",
+                    on_release=lambda x: self.dialog.dismiss()
+                ),
+            ],
+        )
+        self.dialog.open()
+        pass
     def switch(self,instance):
         self.level = Screen2(string.digits,name = 'Screen2')
         self.manager.add_widget(self.level)
@@ -85,7 +115,7 @@ class Screen1(MDScreen):
 class Screen2(MDScreen):
     def __init__(self,lis,**kwargs):
         super().__init__(**kwargs)
-        self.bck = Image(source = 'background.PNG',size_hint = (1,1),allow_stretch = True,keep_ratio = False)
+        # self.bck = Image(source = 'background.PNG',size_hint = (1,1),allow_stretch = True,keep_ratio = False)
         self.lis = lis
         self.setup()
     def setup(self):
@@ -185,7 +215,7 @@ class Screen3(MDScreen):
         self.word = word
         self.typed = typed
         self.digits = digits
-        self.bck = Image(source = 'background.PNG',size_hint = (1,1),allow_stretch = True,keep_ratio = False)
+        # self.bck = Image(source = 'background.PNG',size_hint = (1,1),allow_stretch = True,keep_ratio = False)
         self.main()
     def main(self):
         self.md_bg_color = (0,0,0,1)
